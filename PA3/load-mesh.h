@@ -8,7 +8,8 @@
 
 #ifndef load_mesh_h
 #define load_mesh_h
-
+#include <string>
+#include <vector>
 struct Vector3
 {
     float			x, y, z;
@@ -20,5 +21,9 @@ struct Triangle
 };
 
 void load_mesh(std::string fileName);
+
+extern std::vector<Vector3>	gPositions;
+extern std::vector<Vector3>	gNormals;
+extern std::vector<Triangle> gTriangles;
 
 #endif /* load_mesh_h */

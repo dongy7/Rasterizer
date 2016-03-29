@@ -1,11 +1,12 @@
 #include <GLUT/glut.h>
-
+#include "load-mesh.h"
 
 void display(void);
 void reshape(int, int);
 
 int main(int argc, char** argv)
 {
+    load_mesh("/Users/Dong/Documents/Projects/graphics/xcode/PA3/PA3/bunny.obj");
     glutInit(&argc, argv);
     
     glutInitWindowSize(512, 512);
@@ -26,27 +27,39 @@ void display()
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0, 0, 0, 0, 0, -1, 0, 1, 0);
-    glTranslatef(0, 0, -7);
-    glScalef(2, 2, 2);
+    glTranslatef(0.1, -1, -1.5);
+    glScalef(10, 10, 10);
     
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glFrustum(-0.1, 0.1, -0.1, 0.1, 0.1, 1000);
     
     glViewport(0, 0, 512, 512);
-    glutSolidSphere(1, 32, 16);
-    /* clear the color buffer (resets everything to black) */
     
-    /* set the current drawing color to red */
-//    glColor3f(1, 0, 0);
-//    
-//    
-//    glBegin(GL_TRIANGLES);
-//    glVertex2f(10, 10);
-//    glVertex2f(250, 400);
-//    glVertex2f(400, 10);
-//    
-//    glEnd();
+    glBegin(GL_TRIANGLES);
+    for (int i = 0; i < gTriangles.size(); i++) {
+        int k0 = gTriangles[i].indices[0];
+        int k1 = gTriangles[i].indices[1];
+        int k2 = gTriangles[i].indices[2];
+        
+        Vector3 fstNorm = gNormals[k0];
+        Vector3 sndNorm = gNormals[k1];
+        Vector3 thrdNorm = gNormals[k2];
+        
+        Vector3 fstPos = gPositions[k0];
+        Vector3 sndPos = gPositions[k1];
+        Vector3 thrdPos = gPositions[k2];
+        
+        glNormal3f(fstNorm.x, fstNorm.y, fstNorm.z);
+        glVertex3f(fstPos.x, fstPos.y, fstPos.z);
+        
+        glNormal3f(sndNorm.x, sndNorm.y, sndNorm.z);
+        glVertex3f(sndPos.x, sndPos.y, sndPos.z);
+        
+        glNormal3f(thrdNorm.x, thrdNorm.y, thrdNorm.z);
+        glVertex3f(thrdPos.x, thrdPos.y, thrdPos.z);
+    }
+    glEnd();
     
     /* swap the back and front buffers so we can see what we just drew */
     glutSwapBuffers();
