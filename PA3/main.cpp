@@ -23,7 +23,8 @@ int main(int argc, char** argv)
 
 void display()
 {
-    glClear(GL_COLOR_BUFFER_BIT);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnable(GL_DEPTH_TEST);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0, 0, 0, 0, 0, -1, 0, 1, 0);
@@ -35,6 +36,31 @@ void display()
     glFrustum(-0.1, 0.1, -0.1, 0.1, 0.1, 1000);
     
     glViewport(0, 0, 512, 512);
+    
+    float ka[] = {1, 1, 1, 0};
+    float kd[] = {1, 1, 1, 0};
+    float ks[] = {0, 0, 0, 0};
+    float p = 0;
+    
+    glMaterialfv(GL_FRONT, GL_AMBIENT, ka);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, kd);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, ks);
+    glMaterialf(GL_FRONT, GL_SHININESS, p);
+    
+    float Ia[] = {0.2, 0.2, 0.2, 0};
+    float l[] = {-1, -1, -1, 0};
+    float la[] = {0, 0, 0, 0};
+    float ld[] = {1, 1, 1, 0};
+    float ls[] = {0, 0, 0, 0};
+    
+    glLightModelfv(GL_LIGHT_MODEL_AMBIENT, Ia);
+    glLightfv(GL_LIGHT0, GL_POSITION, l);
+    glLightfv(GL_LIGHT0, GL_AMBIENT, la);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, ld);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, ls);
+    
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
     
     glBegin(GL_TRIANGLES);
     for (int i = 0; i < gTriangles.size(); i++) {
