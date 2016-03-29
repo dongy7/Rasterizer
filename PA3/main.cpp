@@ -22,19 +22,31 @@ int main(int argc, char** argv)
 
 void display()
 {
-    /* clear the color buffer (resets everything to black) */
     glClear(GL_COLOR_BUFFER_BIT);
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0, 0, 0, 0, 0, -1, 0, 1, 0);
+    glTranslatef(0, 0, -7);
+    glScalef(2, 2, 2);
+    
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-0.1, 0.1, -0.1, 0.1, 0.1, 1000);
+    
+    glViewport(0, 0, 512, 512);
+    glutSolidSphere(1, 32, 16);
+    /* clear the color buffer (resets everything to black) */
     
     /* set the current drawing color to red */
-    glColor3f(1, 0, 0);
-    
-    glBegin(GL_TRIANGLES);
-    
-    glVertex2f(10, 10);
-    glVertex2f(250, 400);
-    glVertex2f(400, 10);
-    
-    glEnd();
+//    glColor3f(1, 0, 0);
+//    
+//    
+//    glBegin(GL_TRIANGLES);
+//    glVertex2f(10, 10);
+//    glVertex2f(250, 400);
+//    glVertex2f(400, 10);
+//    
+//    glEnd();
     
     /* swap the back and front buffers so we can see what we just drew */
     glutSwapBuffers();

@@ -27,16 +27,8 @@
 #include <queue>
 #include <fstream>
 #include <float.h>
+#include "load-mesh.h"
 
-struct Vector3
-{
-    float			x, y, z;
-};
-
-struct Triangle
-{
-    unsigned int 	indices[3];
-};
 
 std::vector<Vector3>	gPositions;
 std::vector<Vector3>	gNormals;
