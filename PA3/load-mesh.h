@@ -25,12 +25,12 @@ public:
     std::vector<Vector3>	gPositions;
     std::vector<Vector3>	gNormals;
     std::vector<Triangle>	gTriangles;
-    GLfloat *gPositionList;
-    GLfloat *gNormalsList;
-    GLuint *gIndicesList;
-    int posSize;
-    int normSize;
-    int indexSize;
+    GLfloat                 *gPositionList;
+    GLfloat                 *gNormalsList;
+    GLuint                  *gIndicesList;
+    int                     posSize;
+    int                     normSize;
+    int                     indexSize;
     Mesh(std::string);
     void load_mesh(std::string fileName);
     void initialize();

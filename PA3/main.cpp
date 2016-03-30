@@ -19,7 +19,7 @@ void stop_display();
 float  gTotalTimeElapsed = 0;
 int    gTotalFrames		 = 0;
 GLuint gTimer;
-Mesh *mesh;
+Mesh   *mesh;
 
 int main(int argc, char** argv)
 {
@@ -83,8 +83,8 @@ void init() {
 
 void display(){
     setup_display();
-    renderImmediate();
-//    renderVAO();
+//    renderImmediate();
+    renderVAO();
     stop_display();
 }
 
@@ -175,6 +175,7 @@ void setup_display() {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     start_timing();
 }
+
 void stop_display() {
     float timeElapsed = stop_timing();
     gTotalFrames++;

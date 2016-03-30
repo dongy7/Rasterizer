@@ -38,8 +38,8 @@ Mesh::Mesh(std::string filePath) {
 }
 
 void Mesh::initialize() {
-    posSize = gPositions.size() * 3;
-    normSize = gNormals.size() * 3;
+    posSize   = gPositions.size() * 3;
+    normSize  = gNormals.size() * 3;
     indexSize = gTriangles.size() * 3;
     
     gPositionList = new GLfloat[posSize];
@@ -47,19 +47,19 @@ void Mesh::initialize() {
     gIndicesList = new GLuint[indexSize];
     
     for (int i = 0; i < gPositions.size(); i++) {
-        gPositionList[3*i] = gPositions[i].x;
+        gPositionList[3*i]   = gPositions[i].x;
         gPositionList[3*i+1] = gPositions[i].y;
         gPositionList[3*i+2] = gPositions[i].z;
     }
     
     for (int i = 1; i < gNormals.size(); i++) {
-        gNormalsList[3*i] = gNormals[i].x;
+        gNormalsList[3*i]   = gNormals[i].x;
         gNormalsList[3*i+1] = gNormals[i].y;
         gNormalsList[3*i+2] = gNormals[i].z;
     }
     
     for (int i = 1; i < gTriangles.size(); i++) {
-        gIndicesList[3*i] = gTriangles[i].indices[0];
+        gIndicesList[3*i]   = gTriangles[i].indices[0];
         gIndicesList[3*i+1] = gTriangles[i].indices[1];
         gIndicesList[3*i+2] = gTriangles[i].indices[2];
     }
