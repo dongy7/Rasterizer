@@ -4,7 +4,6 @@
 #include <OpenGL/glu.h>
 #include <OpenGL/glext.h>
 #include "load-mesh.h"
-#define BUFFER_OFFSET(offset) ((void*)(offset))
 
 void init(void);
 void render(void);
@@ -39,7 +38,8 @@ int main(int argc, char** argv)
     }
     fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
     init();
-    glutDisplayFunc(display);
+//    glutDisplayFunc(display);
+    glutDisplayFunc(renderVAO);
     glutReshapeFunc(reshape);
     glClearColor(0,0,0,1);
     
@@ -140,37 +140,50 @@ void reshape(int width, int height)
 }
 
 void renderVAO() {
-//    GLuint vertexArray;
-//    glGenVertexArrays(1, &vertexArray);
-//    glBindVertexArray(vertexArray);
-//    
-//    GLuint vertexBuffer;
-//    glGenBuffers(1, &vertexBuffer);
-//    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3)*gPositions.size(), &gPositions[0], GL_STATIC_DRAW);
-//    glVertexPointer(3, GL_FLOAT, 0, BUFFER_OFFSET(0));
-//    glEnableClientState(GL_VERTEX_ARRAY);
-//    
-//    GLuint normalBuffer;
-//    glGenBuffers(1, &normalBuffer);
-//    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3)*gNormals.size(), &gNormals[0], GL_STATIC_DRAW);
-//    glNormalPointer(GL_FLOAT, 0, BUFFER_OFFSET(0));
-//    glEnableClientState(GL_NORMAL_ARRAY);
-//    
-//    GLuint indiciesBuffer;
-//    glGenBuffers(1, &indiciesBuffer);
-//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indiciesBuffer);
-//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Triangle)*gTriangles.size(), &gTriangles[0], GL_STATIC_DRAW);
-//    
-//    glDrawElements(GL_TRIANGLES, gTriangles.size()*3, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
-//    
-//    glDisableClientState(GL_NORMAL_ARRAY);
-//    glDisableClientState(GL_VERTEX_ARRAY);
-//    
-//    glDeleteBuffers(1, &vertexBuffer);
-//    glDeleteBuffers(1, &normalBuffer);
-//    glDeleteBuffers(1, &indiciesBuffer);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    glEnableClientState(GL_NORMAL_ARRAY);
+    glEnableClientState(GL_VERTEX_ARRAY);
+    
+    start_timing();
+    GLuint vertexArray;
+    glGenVertexArrays(1, &vertexArray);
+    glBindVertexArray(vertexArray);
+    
+    GLuint vertexBuffer;
+    glGenBuffers(1, &vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*(mesh->posSize), mesh->gPositionList, GL_STATIC_DRAW);
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+    
+    GLuint normalBuffer;
+    glGenBuffers(1, &normalBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat)*(mesh->normSize), mesh->gNormalsList, GL_STATIC_DRAW);
+    glNormalPointer(GL_FLOAT, 0, 0);
+    
+    GLuint indiciesBuffer;
+    glGenBuffers(1, &indiciesBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indiciesBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*(mesh->indexSize), mesh->gIndicesList, GL_STATIC_DRAW);
+    
+    glDrawElements(GL_TRIANGLES, mesh->indexSize, GL_UNSIGNED_INT, 0);
+    
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    
+    glDeleteBuffers(1, &vertexBuffer);
+    glDeleteBuffers(1, &normalBuffer);
+    glDeleteBuffers(1, &indiciesBuffer);
+    
+    float timeElapsed = stop_timing();
+    gTotalFrames++;
+    gTotalTimeElapsed += timeElapsed;
+    float fps = gTotalFrames / gTotalTimeElapsed;
+    char string[1024] = {0};
+    sprintf(string, "OpenGL Bunny : %0.2f FPS", fps);
+    glutSetWindowTitle(string);
+    glutPostRedisplay();
+    glutSwapBuffers();
 }
 
 
