@@ -18,10 +18,11 @@ float stop_timing();
 float  gTotalTimeElapsed = 0;
 int    gTotalFrames		 = 0;
 GLuint gTimer;
+Mesh *mesh;
 
 int main(int argc, char** argv)
 {
-    load_mesh("/Users/Dong/Documents/Projects/graphics/xcode/PA3/PA3/bunny.obj");
+    mesh = new Mesh("/Users/Dong/Documents/Projects/graphics/xcode/PA3/PA3/bunny.obj");
     
     glutInit(&argc, argv);
     glutInitWindowSize(512, 512);
@@ -38,9 +39,7 @@ int main(int argc, char** argv)
     }
     fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
     init();
-    glutDisplayFunc(renderVAO);
-    
-//    glutDisplayFunc(display);
+    glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glClearColor(0,0,0,1);
     
@@ -86,27 +85,30 @@ void display()
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     start_timing();
     glBegin(GL_TRIANGLES);
-    for (int i = 0; i < gTriangles.size(); i++) {
-        int k0 = gTriangles[i].indices[0];
-        int k1 = gTriangles[i].indices[1];
-        int k2 = gTriangles[i].indices[2];
+    for (int i = 0; i < mesh->gTriangles.size(); i++) {
+        Triangle *triangle = &mesh->gTriangles[i];
+        int k0 = triangle->indices[0];
+        int k1 = triangle->indices[1];
+        int k2 = triangle->indices[2];
         
-        Vector3 fstNorm = gNormals[k0];
-        Vector3 sndNorm = gNormals[k1];
-        Vector3 thrdNorm = gNormals[k2];
+        Vector3 *fstNorm, *sndNorm, *thirdNorm;
+        fstNorm = &mesh->gNormals[k0];
+        sndNorm = &mesh->gNormals[k1];
+        thirdNorm = &mesh->gNormals[k2];
         
-        Vector3 fstPos = gPositions[k0];
-        Vector3 sndPos = gPositions[k1];
-        Vector3 thrdPos = gPositions[k2];
+        Vector3 *fstPos, *sndPos, *thirdPos;
+        fstPos = &mesh->gPositions[k0];
+        sndPos = &mesh->gPositions[k1];
+        thirdPos = &mesh->gPositions[k2];
         
-        glNormal3f(fstNorm.x, fstNorm.y, fstNorm.z);
-        glVertex3f(fstPos.x, fstPos.y, fstPos.z);
+        glNormal3f(fstNorm->x, fstNorm->y, fstNorm->z);
+        glVertex3f(fstPos->x, fstPos->y, fstPos->z);
         
-        glNormal3f(sndNorm.x, sndNorm.y, sndNorm.z);
-        glVertex3f(sndPos.x, sndPos.y, sndPos.z);
+        glNormal3f(sndNorm->x, sndNorm->y, sndNorm->z);
+        glVertex3f(sndPos->x, sndPos->y, sndPos->z);
         
-        glNormal3f(thrdNorm.x, thrdNorm.y, thrdNorm.z);
-        glVertex3f(thrdPos.x, thrdPos.y, thrdPos.z);
+        glNormal3f(thirdNorm->x, thirdNorm->y, thirdNorm->z);
+        glVertex3f(thirdPos->x, thirdPos->y, thirdPos->z);
     }
     glEnd();
     
@@ -138,37 +140,37 @@ void reshape(int width, int height)
 }
 
 void renderVAO() {
-    GLuint vertexArray;
-    glGenVertexArrays(1, &vertexArray);
-    glBindVertexArray(vertexArray);
-    
-    GLuint vertexBuffer;
-    glGenBuffers(1, &vertexBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3)*gPositions.size(), &gPositions[0], GL_STATIC_DRAW);
-    glVertexPointer(3, GL_FLOAT, 0, BUFFER_OFFSET(0));
-    glEnableClientState(GL_VERTEX_ARRAY);
-    
-    GLuint normalBuffer;
-    glGenBuffers(1, &normalBuffer);
-    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3)*gNormals.size(), &gNormals[0], GL_STATIC_DRAW);
-    glNormalPointer(GL_FLOAT, 0, BUFFER_OFFSET(0));
-    glEnableClientState(GL_NORMAL_ARRAY);
-    
-    GLuint indiciesBuffer;
-    glGenBuffers(1, &indiciesBuffer);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indiciesBuffer);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Triangle)*gTriangles.size(), &gTriangles[0], GL_STATIC_DRAW);
-    
-    glDrawElements(GL_TRIANGLES, gTriangles.size()*3, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
-    
-    glDisableClientState(GL_NORMAL_ARRAY);
-    glDisableClientState(GL_VERTEX_ARRAY);
-    
-    glDeleteBuffers(1, &vertexBuffer);
-    glDeleteBuffers(1, &normalBuffer);
-    glDeleteBuffers(1, &indiciesBuffer);
+//    GLuint vertexArray;
+//    glGenVertexArrays(1, &vertexArray);
+//    glBindVertexArray(vertexArray);
+//    
+//    GLuint vertexBuffer;
+//    glGenBuffers(1, &vertexBuffer);
+//    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3)*gPositions.size(), &gPositions[0], GL_STATIC_DRAW);
+//    glVertexPointer(3, GL_FLOAT, 0, BUFFER_OFFSET(0));
+//    glEnableClientState(GL_VERTEX_ARRAY);
+//    
+//    GLuint normalBuffer;
+//    glGenBuffers(1, &normalBuffer);
+//    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3)*gNormals.size(), &gNormals[0], GL_STATIC_DRAW);
+//    glNormalPointer(GL_FLOAT, 0, BUFFER_OFFSET(0));
+//    glEnableClientState(GL_NORMAL_ARRAY);
+//    
+//    GLuint indiciesBuffer;
+//    glGenBuffers(1, &indiciesBuffer);
+//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indiciesBuffer);
+//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Triangle)*gTriangles.size(), &gTriangles[0], GL_STATIC_DRAW);
+//    
+//    glDrawElements(GL_TRIANGLES, gTriangles.size()*3, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+//    
+//    glDisableClientState(GL_NORMAL_ARRAY);
+//    glDisableClientState(GL_VERTEX_ARRAY);
+//    
+//    glDeleteBuffers(1, &vertexBuffer);
+//    glDeleteBuffers(1, &normalBuffer);
+//    glDeleteBuffers(1, &indiciesBuffer);
 }
 
 
