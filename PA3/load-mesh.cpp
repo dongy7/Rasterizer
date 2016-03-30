@@ -29,12 +29,43 @@
 #include <float.h>
 #include "load-mesh.h"
 
+Mesh::Mesh(std::string filePath) {
+    this->load_mesh(filePath);
+    gPositionList = NULL;
+    gNormalsList = NULL;
+    gIndicesList = NULL;
+    this->initialize();
+}
 
-std::vector<Vector3>	gPositions;
-std::vector<Vector3>	gNormals;
-std::vector<Triangle>	gTriangles;
+void Mesh::initialize() {
+    posSize = gPositions.size() * 3;
+    normSize = gNormals.size() * 3;
+    indexSize = gTriangles.size() * 3;
+    
+    gPositionList = new GLfloat[posSize];
+    gNormalsList = new GLfloat[normSize];
+    gIndicesList = new GLuint[indexSize];
+    
+    for (int i = 0; i < gPositions.size(); i++) {
+        gPositionList[3*i] = gPositions[i].x;
+        gPositionList[3*i+1] = gPositions[i].y;
+        gPositionList[3*i+2] = gPositions[i].z;
+    }
+    
+    for (int i = 1; i < gNormals.size(); i++) {
+        gNormalsList[3*i] = gNormals[i].x;
+        gNormalsList[3*i+1] = gNormals[i].y;
+        gNormalsList[3*i+2] = gNormals[i].z;
+    }
+    
+    for (int i = 1; i < gTriangles.size(); i++) {
+        gIndicesList[3*i] = gTriangles[i].indices[0];
+        gIndicesList[3*i+1] = gTriangles[i].indices[1];
+        gIndicesList[3*i+2] = gTriangles[i].indices[2];
+    }
+}
 
-void tokenize(char* string, std::vector<std::string>& tokens, const char* delimiter)
+void Mesh::tokenize(char* string, std::vector<std::string>& tokens, const char* delimiter)
 {
     char* token = strtok(string, delimiter);
     while (token != NULL)
@@ -44,7 +75,7 @@ void tokenize(char* string, std::vector<std::string>& tokens, const char* delimi
     }
 }
 
-int face_index(const char* string)
+int Mesh::face_index(const char* string)
 {
     int length = strlen(string);
     char* copy = new char[length + 1];
@@ -65,7 +96,7 @@ int face_index(const char* string)
     }
 }
 
-void load_mesh(std::string fileName)
+void Mesh::load_mesh(std::string fileName)
 {
     std::ifstream fin(fileName.c_str());
     if (!fin.is_open())
@@ -135,5 +166,6 @@ void load_mesh(std::string fileName)
     fin.close();
     
     printf("Loaded mesh from %s. (%lu vertices, %lu normals, %lu triangles)\n", fileName.c_str(), gPositions.size(), gNormals.size(), gTriangles.size());
-    printf("Mesh bounding box is: (%0.4f, %0.4f, %0.4f) to (%0.4f, %0.4f, %0.4f)\n", xmin, ymin, zmin, xmax, ymax, zmax);
+    printf("Mesh bounding box is: (%0.4f, %0.4f, %0.4f) to (%0.4f, %0.4f, %0.4f)\n",
+           xmin, ymin, zmin, xmax, ymax, zmax);
 }

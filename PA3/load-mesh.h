@@ -31,7 +31,6 @@ public:
     int posSize;
     int normSize;
     int indexSize;
-    Mesh();
     Mesh(std::string);
     void load_mesh(std::string fileName);
     void initialize();
