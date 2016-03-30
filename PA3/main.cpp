@@ -6,13 +6,15 @@
 #include "load-mesh.h"
 
 void init(void);
-void render(void);
+void renderImmediate(void);
 void renderVAO(void);
 void display(void);
 void reshape(int, int);
 void init_timer();
 void start_timing();
 float stop_timing();
+void setup_display();
+void stop_display();
 
 float  gTotalTimeElapsed = 0;
 int    gTotalFrames		 = 0;
@@ -28,7 +30,6 @@ int main(int argc, char** argv)
     glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
     glutCreateWindow("PA3");
     
-    
     glewExperimental = GL_TRUE;
     GLenum err = glewInit();
     if (GLEW_OK != err)
@@ -37,9 +38,9 @@ int main(int argc, char** argv)
         fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
     }
     fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
+    
     init();
-//    glutDisplayFunc(display);
-    glutDisplayFunc(renderVAO);
+    glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glClearColor(0,0,0,1);
     
@@ -80,10 +81,30 @@ void init() {
     
 }
 
-void display()
+void display(){
+    setup_display();
+    renderImmediate();
+//    renderVAO();
+    stop_display();
+}
+
+void reshape(int width, int height)
 {
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    start_timing();
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+    gluLookAt(0, 0, 0, 0, 0, -1, 0, 1, 0);
+    glTranslatef(0.1, -1, -1.5);
+    glScalef(10, 10, 10);
+    
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glFrustum(-0.1, 0.1, -0.1, 0.1, 0.1, 1000);
+    
+    glViewport(0, 0, 512, 512);
+    glViewport(0,0,width,height);
+}
+
+void renderImmediate() {
     glBegin(GL_TRIANGLES);
     for (int i = 0; i < mesh->gTriangles.size(); i++) {
         Triangle *triangle = &mesh->gTriangles[i];
@@ -111,32 +132,6 @@ void display()
         glVertex3f(thirdPos->x, thirdPos->y, thirdPos->z);
     }
     glEnd();
-    
-    float timeElapsed = stop_timing();
-    gTotalFrames++;
-    gTotalTimeElapsed += timeElapsed;
-    float fps = gTotalFrames / gTotalTimeElapsed;
-    char string[1024] = {0};
-    sprintf(string, "OpenGL Bunny : %0.2f FPS", fps);
-    glutSetWindowTitle(string);
-    glutPostRedisplay();
-    glutSwapBuffers();
-}
-
-void reshape(int width, int height)
-{
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-    gluLookAt(0, 0, 0, 0, 0, -1, 0, 1, 0);
-    glTranslatef(0.1, -1, -1.5);
-    glScalef(10, 10, 10);
-    
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glFrustum(-0.1, 0.1, -0.1, 0.1, 0.1, 1000);
-    
-    glViewport(0, 0, 512, 512);
-    glViewport(0,0,width,height);
 }
 
 void renderVAO() {
@@ -174,7 +169,13 @@ void renderVAO() {
     glDeleteBuffers(1, &vertexBuffer);
     glDeleteBuffers(1, &normalBuffer);
     glDeleteBuffers(1, &indiciesBuffer);
-    
+}
+
+void setup_display() {
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    start_timing();
+}
+void stop_display() {
     float timeElapsed = stop_timing();
     gTotalFrames++;
     gTotalTimeElapsed += timeElapsed;
