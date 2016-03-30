@@ -2,14 +2,14 @@
 //  load-mesh.h
 //  PA3
 //
-//  Created by Dong Yeop Lee on 29/03/2016.
-//  Copyright © 2016 Dong Yeop Lee. All rights reserved.
 //
 
 #ifndef load_mesh_h
 #define load_mesh_h
 #include <string>
 #include <vector>
+#include <OpenGL/gl.h>
+
 struct Vector3
 {
     float			x, y, z;
@@ -20,10 +20,25 @@ struct Triangle
     unsigned int 	indices[3];
 };
 
-void load_mesh(std::string fileName);
+class Mesh {
+public:
+    std::vector<Vector3>	gPositions;
+    std::vector<Vector3>	gNormals;
+    std::vector<Triangle>	gTriangles;
+    GLfloat *gPositionList;
+    GLfloat *gNormalsList;
+    GLuint *gIndicesList;
+    int posSize;
+    int normSize;
+    int indexSize;
+    Mesh();
+    Mesh(std::string);
+    void load_mesh(std::string fileName);
+    void initialize();
+private:
+    void tokenize(char*, std::vector<std::string>&, const char*);
+    int face_index(const char*);
+};
 
-extern std::vector<Vector3>	gPositions;
-extern std::vector<Vector3>	gNormals;
-extern std::vector<Triangle> gTriangles;
 
 #endif /* load_mesh_h */

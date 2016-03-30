@@ -4,8 +4,11 @@
 #include <OpenGL/glu.h>
 #include <OpenGL/glext.h>
 #include "load-mesh.h"
+#define BUFFER_OFFSET(offset) ((void*)(offset))
 
 void init(void);
+void render(void);
+void renderVAO(void);
 void display(void);
 void reshape(int, int);
 void init_timer();
@@ -19,27 +22,40 @@ GLuint gTimer;
 int main(int argc, char** argv)
 {
     load_mesh("/Users/Dong/Documents/Projects/graphics/xcode/PA3/PA3/bunny.obj");
-    glutInit(&argc, argv);
     
+    glutInit(&argc, argv);
     glutInitWindowSize(512, 512);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DEPTH | GLUT_DOUBLE);
     glutCreateWindow("PA3");
     
+    
+    glewExperimental = GL_TRUE;
+    GLenum err = glewInit();
+    if (GLEW_OK != err)
+    {
+        /* Problem: glewInit failed, something is seriously wrong. */
+        fprintf(stderr, "Error: %s\n", glewGetErrorString(err));
+    }
+    fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
     init();
-    glutDisplayFunc(display);
+    glutDisplayFunc(renderVAO);
+    
+//    glutDisplayFunc(display);
     glutReshapeFunc(reshape);
     glClearColor(0,0,0,1);
     
-//    init_timer();
+    init_timer();
     glutMainLoop();
     return 0;
 }
 void init() {
+    glEnable(GL_RESCALE_NORMAL);
     glEnable(GL_DEPTH_TEST);
     glShadeModel(GL_SMOOTH);
     
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
+    
     
     float ka[] = {1, 1, 1, 0};
     float kd[] = {1, 1, 1, 0};
@@ -68,7 +84,7 @@ void init() {
 void display()
 {
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-//    start_timing();
+    start_timing();
     glBegin(GL_TRIANGLES);
     for (int i = 0; i < gTriangles.size(); i++) {
         int k0 = gTriangles[i].indices[0];
@@ -94,20 +110,19 @@ void display()
     }
     glEnd();
     
-//    float timeElapsed = stop_timing();
-//    gTotalFrames++;
-//    gTotalTimeElapsed += timeElapsed;
-//    float fps = gTotalFrames / gTotalTimeElapsed;
-//    char string[1024] = {0};
-//    sprintf(string, "OpenGL Bunny : %0.2f FPS", fps);
-//    glutSetWindowTitle(string);
-//    glutPostRedisplay();
+    float timeElapsed = stop_timing();
+    gTotalFrames++;
+    gTotalTimeElapsed += timeElapsed;
+    float fps = gTotalFrames / gTotalTimeElapsed;
+    char string[1024] = {0};
+    sprintf(string, "OpenGL Bunny : %0.2f FPS", fps);
+    glutSetWindowTitle(string);
+    glutPostRedisplay();
     glutSwapBuffers();
 }
 
 void reshape(int width, int height)
 {
-    
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
     gluLookAt(0, 0, 0, 0, 0, -1, 0, 1, 0);
@@ -122,14 +137,38 @@ void reshape(int width, int height)
     glViewport(0,0,width,height);
 }
 
-void render() {
+void renderVAO() {
     GLuint vertexArray;
     glGenVertexArrays(1, &vertexArray);
     glBindVertexArray(vertexArray);
     
-    GLuint buffer;
-    glGenBuffers(1, &buffer);
-    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    GLuint vertexBuffer;
+    glGenBuffers(1, &vertexBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3)*gPositions.size(), &gPositions[0], GL_STATIC_DRAW);
+    glVertexPointer(3, GL_FLOAT, 0, BUFFER_OFFSET(0));
+    glEnableClientState(GL_VERTEX_ARRAY);
+    
+    GLuint normalBuffer;
+    glGenBuffers(1, &normalBuffer);
+    glBindBuffer(GL_ARRAY_BUFFER, normalBuffer);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(Vector3)*gNormals.size(), &gNormals[0], GL_STATIC_DRAW);
+    glNormalPointer(GL_FLOAT, 0, BUFFER_OFFSET(0));
+    glEnableClientState(GL_NORMAL_ARRAY);
+    
+    GLuint indiciesBuffer;
+    glGenBuffers(1, &indiciesBuffer);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indiciesBuffer);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(Triangle)*gTriangles.size(), &gTriangles[0], GL_STATIC_DRAW);
+    
+    glDrawElements(GL_TRIANGLES, gTriangles.size()*3, GL_UNSIGNED_INT, BUFFER_OFFSET(0));
+    
+    glDisableClientState(GL_NORMAL_ARRAY);
+    glDisableClientState(GL_VERTEX_ARRAY);
+    
+    glDeleteBuffers(1, &vertexBuffer);
+    glDeleteBuffers(1, &normalBuffer);
+    glDeleteBuffers(1, &indiciesBuffer);
 }
 
 
