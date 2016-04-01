@@ -4,11 +4,14 @@
 #include <OpenGL/glu.h>
 #include <OpenGL/glext.h>
 #include "load-mesh.h"
+#include <iostream>
+#include <string>
 
 void init(void);
 void renderImmediate(void);
 void renderVAO(void);
 void display(void);
+void displayVAO(void);
 void reshape(int, int);
 void init_timer();
 void start_timing();
@@ -23,7 +26,7 @@ Mesh   *mesh;
 
 int main(int argc, char** argv)
 {
-    mesh = new Mesh("/Users/Dong/Documents/Projects/graphics/xcode/PA3/PA3/bunny.obj");
+    mesh = new Mesh("bunny.obj");
     
     glutInit(&argc, argv);
     glutInitWindowSize(512, 512);
@@ -40,7 +43,13 @@ int main(int argc, char** argv)
     fprintf(stdout, "Status: Using GLEW %s\n", glewGetString(GLEW_VERSION));
     
     init();
-    glutDisplayFunc(display);
+    
+    if (strncmp(argv[1], "-i", 2) == 0) {
+        glutDisplayFunc(display);
+    } else {
+        glutDisplayFunc(displayVAO);
+    }
+    
     glutReshapeFunc(reshape);
     glClearColor(0,0,0,1);
     
@@ -49,7 +58,8 @@ int main(int argc, char** argv)
     return 0;
 }
 void init() {
-    glEnable(GL_RESCALE_NORMAL);
+//    glEnable(GL_RESCALE_NORMAL);
+    glEnable(GL_NORMALIZE);
     glEnable(GL_DEPTH_TEST);
     glShadeModel(GL_SMOOTH);
     
@@ -83,7 +93,12 @@ void init() {
 
 void display(){
     setup_display();
-//    renderImmediate();
+    renderImmediate();
+    stop_display();
+}
+
+void displayVAO() {
+    setup_display();
     renderVAO();
     stop_display();
 }
