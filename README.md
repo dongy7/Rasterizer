@@ -1,4 +1,7 @@
-# COMP 575 PA3
+# OpenGL Rasterizer
+
+## Overview
+This program uses the OpenGL pipeline to render an object represented as a triangle mesh. The actual object is composed of ~69,000 triangles. 
 
 ## Running
 1. open `PA3.xcodeproj`.
