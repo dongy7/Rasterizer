@@ -16,4 +16,4 @@ This program uses the OpenGL pipeline to render an object represented as a trian
 - Vertex Arrays: ~760FPS
 
 ## Result
-<img src="/out/bunny.png" width="400px" height="400px" />
+<img src="/bunny.png" width="400px" height="400px" />
